@@ -56,8 +56,32 @@ return 0; //added to remove compiler warning -- you should decide what to return
 int shm_close(int id) {
 //you write this too!
 
+// look for the id passed in
+int i = 0;
+for (i = 0; i < 64; i++)
+{
+  if (shm_table.shm_pages[i].id == id)
+    break;
+}
+ 
+// if i == 64, the id was not found
+// otherwise, the id is at index i
 
+if (i != 64 && shm_table.shm_pages[i].refcnt != 0)
+{
+  shm_table.shm_pages[i].refcnt = shm_table.shm_pages[i].refcnt - 1;
+}
+else
+{
+  return -1; // error
+}
 
+if (shm_table.shm_pages[i].refcnt == 0) // clear the table entry
+{
+  shm_table.shm_pages[i].id = 0;
+  shm_table.shm_pages[i].frame = 0;
+  shm_table.shm_pages[i].refcnt = 0;
+}
 
 return 0; //added to remove compiler warning -- you should decide what to return
 }
