@@ -36,12 +36,19 @@ uint ID_Exist = 0;
 for (i = 0; i< 64; i++) {
     if (shm_table.shm_pages[i].id == id) {//Exists
       shm_table.shm_pages[i].refcnt++;
+      ID_Exist = 1;
       i = 64;
     }
-    else if (i == 63) {//Does not exit
-      ID_Exist = 1;
+    else if (i == 63) {//Does not exist
+      //kalloc(id);
+      //memset;
+      //shm_table.shm_pages[?] = 1;
     }
 }
+  
+//if (!ID_Exist) {
+  
+  
 //**********
 
 
