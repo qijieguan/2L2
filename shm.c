@@ -31,7 +31,18 @@ void shminit() {
 int shm_open(int id, char **pointer) {
 
 //you write this
-
+//*********** CS 153
+uint ID_Exist = 0;
+for (i = 0; i< 64; i++) {
+    if (shm_table.shm_pages[i].id == id) {//Exists
+      shm_table.shm_pages[i].refcnt++;
+      i = 64;
+    }
+    else if (i == 63) {//Does not exit
+      ID_Exist = 1;
+    }
+}
+//**********
 
 
 
