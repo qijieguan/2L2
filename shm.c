@@ -49,7 +49,7 @@ if (i != 64) // id exists // is probably good
 {
   
   //use mappages to add the mapping between the va and pa
-  mappages(myproc()->pgdir, PGROUNDUP(myproc()->sz), PGSIZE, V2P(shm_table.shm_pages[i].frame), PTE_W|PTE_U); // perm writeable and accessible to user
+  mappages(myproc()->pgdir, (char*)PGROUNDUP(myproc()->sz), PGSIZE, V2P(shm_table.shm_pages[i].frame), PTE_W|PTE_U); // perm writeable and accessible to user
  
   //pointer that will be returned through the function call
   *pointer = (char *)PGROUNDUP(myproc()->sz); // I think PGROUNDUP goes here
@@ -97,7 +97,7 @@ else // id doesn't exist already, need to make it
   shm_table.shm_pages[k].frame = mem;
   
   // map the page 
-  mappages(myproc()->pgdir, PGROUNDUP(myproc()->sz), PGSIZE, V2P(shm_table.shm_pages[k].frame), PTE_W|PTE_U);
+  mappages(myproc()->pgdir, (char*)PGROUNDUP(myproc()->sz), PGSIZE, V2P(shm_table.shm_pages[k].frame), PTE_W|PTE_U);
   
   //set refcnt = 1
   shm_table.shm_pages[k].refcnt = 1;
