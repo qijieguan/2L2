@@ -43,7 +43,10 @@ int shm_close(int id) {
 //you write this too!
 
 // look for the id passed in
-int i = 0;
+int i = 0; 
+  
+acquire(&(shm_table.lock)); // make sure nothing weird happens with both writing to the table at the same time
+  
 for (i = 0; i < 64; i++)
 {
   if (shm_table.shm_pages[i].id == id)
@@ -59,6 +62,7 @@ if (i != 64 && shm_table.shm_pages[i].refcnt != 0)
 }
 else
 {
+  release(&(shm_table.lock)); // release in case of error
   return -1; // error
 }
 
@@ -68,6 +72,8 @@ if (shm_table.shm_pages[i].refcnt == 0) // clear the table entry
   shm_table.shm_pages[i].frame = 0;
   shm_table.shm_pages[i].refcnt = 0;
 }
+  
+release(&(shm_table.lock)); // now that everything is taken care of, someone else can look at this table
 
 return 0; //added to remove compiler warning -- you should decide what to return
 }
