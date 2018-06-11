@@ -45,12 +45,20 @@ for (i = 0; i < 64; i++)
 // if i == 64, the id was not found
 // otherwise, the id is at index i
 
-if (i != 64) // id exists
+if (i != 64) // id exists // is probably good
 {
-  //increase the reference count
   
   //use mappages to add the mapping between the va and pa
+  mappages(myproc()->pgdir, PGROUNDUP(myproc()->sz), PGSIZE, V2P(shm_table.shm_pages[i].frame), PTE_W|PTE_U); // perm writeable and accessible to user
+ 
+  //pointer that will be returned through the function call
+  *pointer = (char *)myproc()->sz;
   
+  //increase the reference count
+  shm_table.shm_pages[i].refcnt = shm_table.shm_pages[i].refcnt + 1;
+  
+  //update sz
+  myproc()->sz = PGROUNDUP(myproc()->sz) + PGSIZE;
 }
 else // id doesn't exist already, need to make it
 {
