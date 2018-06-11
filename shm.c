@@ -32,9 +32,40 @@ int shm_open(int id, char **pointer) {
 
 //you write this
 
+int i = 0; 
+  
+acquire(&(shm_table.lock)); // make sure nothing weird happens with both writing to the table at the same time
+  
+for (i = 0; i < 64; i++)
+{
+  if (shm_table.shm_pages[i].id == id)
+    break;
+}
+ 
+// if i == 64, the id was not found
+// otherwise, the id is at index i
 
+if (i != 64) // id exists
+{
+  //increase the reference count
+  
+  //use mappages to add the mapping between the va and pa
+  
+}
+else // id doesn't exist already, need to make it
+{
+  //allocate a page
+  
+  //map it
+  
+  //store this information in the shm_table
+  
+}
 
-
+// make sure to return the virtual address through the second parameter
+  
+release(&(shm_table.lock)); // release the lock
+  
 return 0; //added to remove compiler warning -- you should decide what to return
 }
 
