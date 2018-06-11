@@ -62,12 +62,53 @@ if (i != 64) // id exists // is probably good
 }
 else // id doesn't exist already, need to make it
 {
-  //allocate a page
+  //find an empty entry in the table
+  int k = 0;
   
-  //map it
+  for (k = 0; k < 64; k++)
+  {
+    if (shm_table.shm_pages[k].id == 0)
+      break;
+  }
   
-  //store this information in the shm_table
+  //if k == 64, there is no empty entry in the table, return -1
+  if (k == 64)
+  {
+    release(&(shm_table.lock)); // release the lock before returning
+    return -1;
+  }
   
+  //otherwise k is the first empty entry in the table
+  //initialize id
+  shm_table.shm_pages[k].id = id;
+  
+  //kalloc page
+  
+  char *mem;
+  
+  mem = kalloc();
+  if(mem == 0)
+  {
+    release(&(shm_table.lock)); // release the lock before returning
+    return -1; // error
+  }
+  memset(mem, 0, PGSIZE);
+  
+  shm_table.shm_pages[k].frame = mem;
+  
+  // map the page 
+  mappages(myproc()->pgdir, PGROUNDUP(myproc()->sz), PGSIZE, V2P(shm_table.shm_pages[k].frame), PTE_W|PTE_U);
+  
+  //set refcnt = 1
+  shm_table.shm_pages[k].refcnt = 1;
+  
+  // do the rest as the other part
+  
+  //pointer that will be returned through the function call
+  *pointer = (char *)PGROUNDUP(myproc()->sz); // I think PGROUNDUP goes here
+  
+  //update sz
+  myproc()->sz = PGROUNDUP(myproc()->sz) + PGSIZE;
 }
 
 // make sure to return the virtual address through the second parameter
