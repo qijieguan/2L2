@@ -52,7 +52,7 @@ if (i != 64) // id exists // is probably good
   mappages(myproc()->pgdir, PGROUNDUP(myproc()->sz), PGSIZE, V2P(shm_table.shm_pages[i].frame), PTE_W|PTE_U); // perm writeable and accessible to user
  
   //pointer that will be returned through the function call
-  *pointer = (char *)myproc()->sz;
+  *pointer = (char *)PGROUNDUP(myproc()->sz); // I think PGROUNDUP goes here
   
   //increase the reference count
   shm_table.shm_pages[i].refcnt = shm_table.shm_pages[i].refcnt + 1;
